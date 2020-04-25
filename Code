@@ -1,0 +1,773 @@
+import praw
+import config
+import random
+import re
+import os
+
+def bot_login():
+    r = praw.Reddit(username=config.username,
+                    password=config.password,
+                    client_id=config.client_id,
+                    client_secret=config.client_secret,
+                    user_agent="created by farrygodjd to comment")
+    return r
+author = ['Theoden-Bot']
+grima = ['been our friend and ally', 'friend and ally', 'herald of woe']
+theoden = ['Theoden', 'theoden', 'Théoden']
+welcome= ['He’s not welcome', 'not welcome','herald of woe']
+spell = ['release you from this spell', 'released from spell', 'magic']
+wound = ['be gone', 'from this spell', "Saruman's spell"]
+god = ['breathe the free air', 'Theoden was released']
+snake = [' I’ve only ever served you my lord', 'grima sent out', ' grima expelled', 'grima banished', 'grima was sent out', 'grima was expelled']
+theodred = ['theodred', 'Théodred']
+flower = ['Simblemynë', 'Simblemyne']
+jackson = ['Théodred’s death', 'Theodred’s death']
+thousand = ['Two thousand', '2000', '2,000', 'open war', 'You have two thousand good men', 'Éomer is loyal', 'Eomer is loyal', 'His men will return and fight for their King']
+deep = ["Helm's deep"]
+eowyn = ['niece smile']
+scout= ['A scout!', 'a scout', 'wargs', 'warg']
+attack = ['We’re under attack!', "we're under attack"]
+haste = ['haste', 'lead the people']
+fight = ['I can fight']
+dead = ['wounded', 'wolves of isengard', 'fall']
+few = ['few', 'safe', 'So few of you have returned']
+lord = ['lord aragorn', 'set a watch', 'bar the gate']
+lesser = ['who cannot fight', 'woman and children', 'woman and the children']
+host = ['A great host, you say?', 'All Isengard is emptied.', 'a great host', 'great host?']
+army = ['army bred for a single purpose', 'destroy the world of Men', 'They will be here by nightfall']
+refugees = ['let them come', 'refugees']
+orc = ['This is no rabble of mindless Orcs', 'These are Uruk-Hai','Uruk-Hai', 'Their armour is thick and their shields broad', 'mindless']
+fortress = [' water on rock', 'hordes will pillage and burn']
+crops = ['destroy Rohan’s crops or villages', 'down to the last child']
+riders = ['Send out riders', 'call for aid']
+gondor = ['gondor will answer', 'alliances', 'answer', 'burning']
+caves = ['caves', 'gates', ]
+time = ['there is no time', 'war is upon us']
+gamling = ['my lord', 'my lord?', 'who am I']
+sire = ['You are our king, sire', 'sire']
+end = ['to whatever end']
+poem = ['poem', 'horse', 'rider', 'rain on the mountain', 'Where is the horn that was blowing', 'Where is the horse and the rider', 'Like wind in the meadow', 'The days have gone down in the West', ]
+begins = ['so it begins']
+hit = ['hit anything', 'give them a volley']
+conjure = [' Is this it? Is this all you can conjure, Saruman?', 'saruman', 'can conjure', ' Is this it? Is this all you can conjure Saruman?']
+brace = ['brace the gate', 'brace']
+firm = ['stand firm', 'firm']
+keep = ['Get your men out of there', 'fall back']
+gate= ['to the gate']
+hold = ['we cannot hold them much longer', "we can't hold much longer", 'hold them']
+time = ['how long do you need', 'long as you can give me']
+shore = ['shore up the door', 'door']
+spam = ['get out']
+pull = ['fall back', 'pull them back']
+breached = ['they have broken', 'breached', 'retreat', 'castle is breached']
+over = ['it is over', 'fortress is taken']
+death = ['ride out', 'meet them', 'reckless hate','barricade the entrance', 'make for the mountain pass']
+ride = ['ride out with me', 'death and glory', 'for rohan'  ]
+horn = ['horn', 'Helm Hammerhand', 'sound in the Deep one last time','sun is rising']
+sword = ['be the hour we draw swords', 'draw swords', 'draw sword',]
+deeds = ['red dawn', 'now for ruin', 'now for wrath']
+win = ['victory', 'won']
+peace = ['Can we not have peace', 'Can we not take counsel together', 'counsel together', 'we shall have peace', 'gibbet']
+broken = ['staff is broken', 'man of rohan', 'free of him']
+sire = ['thatched barn', 'What is the house of Rohan', 'lesser son of greater sires' ]
+defend = ['victorious dead', 'Tonight we remember', 'this night we remember']
+honor = ['honorable man', "I'm happy for you"]
+raze = ['raze Minas Tirith to the ground', 'sees a king', 'Rohan must be ready']
+beacons = ['Gondor calls for aid', 'beacons', 'black arrow', 'beacons are lit', 'rohan will answer', 'muster the Rohirrim']
+two = ['my lord', 'across the riddermark']
+merry = ['I have a sword', 'I offer you service', 'I offer my service', 'esquire of rohan', 'You shall be Meriadoc', ]
+doom = ['before the walls', 'doom of our time', 'war already marches', 'kinsmen may have no need to ride to war']
+snowbourn = ['snowbourn', ' fenmarch']
+spears = ['six thousand', '6,000', '6000', 'spears', 'less than half', 'less then half']
+mordor = ['not enough to break the lines', 'line of mordor']
+elrond = ['Anduril', 'elrond', 'take my leave']
+must = ['He leaves because he must', 'because he must', 'there is no hope', 'he leaves because there is no hope']
+less = ['defeat the armies', 'too few have come', 'meet them in battle']
+instruction = ['left instruction', 'your rule in my stead', 'seat in the Golden Hall']
+duty  = ['duty', 'I would have you smile', 'these days renewed', 'what other duty', 'what duty']
+swift = ['light and swift' , 'It is a long road ahead', 'man and beast']
+hobbit = ['Meriadoc', 'little hobbits', 'belong in war']
+ashamed = ['I would be ashamed to be left behind', 'left behind', 'three day gallop']
+want = ['I want to fight', 'say no more']
+ride = ['move out', 'form up', 'ride now to gondor', 'ride to gondor']
+against = ['time is against us', 'legions of the enemy advance', 'Minas Tirith is surrounded', 'The lower level’s in flames' ]
+night = ['ride through the night', 'prepare to move out', 'move out']
+speech = ['pelennor ', 'fields','speech', 'ruin', "world's end", 'arise','spears shall shaken', 'shields shall be splintered', 'sword day', 'red day', 'sun rises', 'ride now']
+safe = ['drive them to the river', 'the river']
+form =  ['reform the line', 're-form the line']
+charge = ['charge', 'sound the charge', 'take them head on']
+mumak = ['aim for the head', 'Mûmakil', 'Mumakil', 'Oliphaunt']
+rally = ['rally to me']
+witch = ['witch king', 'witch-king', 'witch king of angmar', 'witch-king of angmar', 'face']
+eyes = ['i know your face', 'darken']
+save = ['save', 'final', 'my body is broken', "I'm going to save you"]
+kill = ['death', 'death!', 'death!!', 'death!!!']
+def run_bot(r, comment_replied_to):
+    for comment in r.subreddit('lotrmemes').comments(limit=25):
+        for keyword in theoden:
+            if keyword in comment.body and comment.id not in comment_replied_to and not comment.author == r.user.me:
+
+                for keyword in welcome:
+
+                    if re.search(r"\b(" + "|".join(welcome) + r")\b",comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+
+                        print("dshj")
+
+                        comment.reply("Why should I welcome you," + " " + comment.author.name + " " + "Stormcrow?")
+
+                        comment_replied_to.append(comment.id)
+
+                        with open("comment_replied_to.txt", "a") as f:
+
+                            f.write(comment.id + "\n")
+
+                for keyword in grima:
+                    if re.search(r"\b(" + "|".join(grima) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("snake")
+                        comment.reply("*Grima*")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in spell:
+                    if re.search(r"\b(" + "|".join(spell) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("stormcrow")
+                        comment.reply("Hahahahaahaha. Hahahahahahah. You have no power here " + " " + comment.author.name + " " + "the Grey")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in wound:
+                    if re.search(r"\b(" + "|".join(wound) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("Face")
+                        comment.reply("I know your face. Éowyn. Éowyn. Gandalf?")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in snake:
+                    if re.search(r"\b(" + "|".join(snake) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("Worm")
+                        comment.reply("Your witchcraft would have had me crawling on all fours like a beast!")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in god:
+                    if re.search(r"\b(" + "|".join(god) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("sdj")
+                        comment.reply("Dark have been my dreams of late.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in theodred:
+                    if re.search(r"\b(" + "|".join(theodred) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("sad")
+                        comment.reply("Where is Théodred? Where is my son?")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in flower:
+                    if re.search(r"\b(" + "|".join(flower) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("Flower")
+                        comment.reply("A Simblemynë. Ever has it grown on the tombs of my fore bearers. Now it shall cover the grave of my son. Alas that these evil days should be mine. The young perish, and the old linger. That I should live to see the last days of my house.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in jackson:
+                    if re.search(r"\b(" + "|".join(jackson) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("jackson")
+                        comment.reply("No parent should have to bury their child.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in thousand:
+                    if re.search(r"\b(" + "|".join(thousand) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("thousand")
+                        comment.reply("When I last looked, Théoden, not Aragorn, was King of Rohan.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in deep:
+                    if re.search(r"\b(" + "|".join(deep) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("Helm's deep")
+                        comment.reply(" I am ready Gamling. Bring my horse...This is not a defeat...We will return...We will return.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in eowyn:
+                    if re.search(r"\b(" + "|".join(eowyn) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("Eowyn")
+                        list = ['She watched her mother succumb to grief. Then she was left alone, to tend her king in growing fear. Doomed to wait upon an old man who should have loved her as a father.', 'I haven’t seen my niece smile for a long time. She was a girl when they brought her father back dead. Cut down by Orcs.']
+                        random_item = random.choice(list)
+                        comment.reply(random_item)
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in scout:
+                    if re.search(r"\b(" + "|".join(scout) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("scout")
+                        comment.reply(" What is it? What do you see?")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in attack:
+                    if re.search(r"\b(" + "|".join(attack) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("attack")
+                        comment.reply(" All riders to the head of the column.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in haste:
+                    if re.search(r"\b(" + "|".join(haste) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("haste")
+                        comment.reply("You must lead the people to Helm’s Deep, and make haste.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in fight:
+                    if re.search(r"\b(" + "|".join(fight) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("fight")
+                        comment.reply("No! You must do this, for me.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in dead:
+                    if re.search(r"\b(" + "|".join(dead) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("dead")
+                        comment.reply(" Get the wounded on horses. The wolves of Isengard will return. Leave the dead.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in few:
+                    if re.search(r"\b(" + "|".join(few) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("few")
+                        comment.reply(" Our people are safe. We have paid for it with many lives.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in lord:
+                    if re.search(r"\b(" + "|".join(lord) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("lord")
+                        comment.reply("Draw all our forces behind the wall. Bar the gate. And set a watch on the surround.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in lesser:
+                    if re.search(r"\b(" + "|".join(lesser) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("lesser")
+                        comment.reply("Get them into the caves. Saruman’s arm will have grown long indeed if he thinks he can reach us here")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in host:
+                    if re.search(r"\b(" + "|".join(host) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("host")
+                        comment.reply("A great host, you say?")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in army:
+                    if re.search(r"\b(" + "|".join(army) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("army")
+                        comment.reply("Let them come!")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in refugees:
+                    if re.search(r"\b(" + "|".join(refugees) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("refugees")
+                        treebeard = ['I want every man and strong lad able to bear arms to be ready for battle by nightfall.', 'We will cover the causeway and the gate from above. No army has ever breached the Deeping wall, or set foot inside the Hornburg!']
+                        random_item = random.choice(treebeard)
+                        comment.reply(random_item)
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in orc:
+                    if re.search(r"\b(" + "|".join(orc) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("orc")
+                        comment.reply(" I have fought many wars, Master Dwarf. I know how to defend my own keep")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in fortress:
+                    if re.search(r"\b(" + "|".join(fortress) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("fortress")
+                        comment.reply("They will break upon this fortress like water on rock. Saruman’s hordes will pillage and burn. We’ve seen it before. Crops can be resown, homes rebuilt. Within these walls we will outlast them.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in crops:
+                    if re.search(r"\b(" + "|".join(crops) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("crops")
+                        comment.reply("*What would you have me do? Look at my men. Their courage hangs by a thread. If this is to be our end, then I would have them make such an end as to be worthy of remembrance.*")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in riders:
+                    if re.search(r"\b(" + "|".join(riders) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("riders")
+                        comment.reply("And who will come? Elves? Dwarves? We are not so lucky in our friends as you. The old alliances are dead.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in gondor:
+                    if re.search(r"\b(" + "|".join(gondor) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("gondor!")
+                        comment.reply("Gondor?! Where was Gondor when the Westfold fell?! Where was Gondor when our enemies closed in around us?! Where was Gon–? No, my Lord" + " " + comment.author.name + ", " + "we are alone.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in caves:
+                    if re.search(r"\b(" + "|".join(caves) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("caves!")
+                        comment.reply("Get the women and children into the caves.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in time:
+                    if re.search(r"\b(" + "|".join(time) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("time!")
+                        comment.reply("There is no time. War is upon us.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in gamling:
+                    if re.search(r"\b(" + "|".join(gamling) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("I'm cryin")
+                        comment.reply(" Who am I, Gamling?")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in sire:
+                    if re.search(r"\b(" + "|".join(sire) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("sire")
+                        comment.reply("And do you trust your king?")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in  end:
+                    if re.search(r"\b(" + "|".join(end) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("end")
+                        comment.reply(" To whatever end.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in poem:
+                    if re.search(r"\b(" + "|".join(poem) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("poem")
+                        comment.reply("Where is the horse and the rider? Where is the horn that was blowing? They have passed like rain on the mountains. Like wind in the meadow. The days have gone down in the West, behind the hills, into shadow. How did it come to this?")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in begins:
+                    if re.search(r"\b(" + "|".join(begins) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("begins")
+                        comment.reply("So it begins...")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in hit:
+                    if re.search(r"\b(" + "|".join(hit) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("hit")
+                        comment.reply("Give them a volley.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in conjure:
+                    if re.search(r"\b(" + "|".join(conjure) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("Saruman")
+                        comment.reply(" Is this it? Is this all you can conjure, Saruman?")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in brace:
+                    if re.search(r"\b(" + "|".join(brace) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("brace")
+                        comment.reply("Brace the gate!")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in firm:
+                    if re.search(r"\b(" + "|".join(firm) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("firm")
+                        comment.reply(" Hold them! Stand firm!")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in keep:
+                    if re.search(r"\b(" + "|".join(keep) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("keep")
+                        comment.reply(comment.author.name + " !" + " "+  " Fall back to the Keep! Get your men out of there!")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in gate:
+                    if re.search(r"\b(" + "|".join(gate) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("gate")
+                        comment.reply("To the gate. Draw your swords!")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in hold:
+                    if re.search(r"\b(" + "|".join(hold) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("holdd")
+                        comment.reply("As long as you can give me")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in time:
+                    if re.search(r"\b(" + "|".join(time) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("time")
+                        comment.reply( "As long as you can give me.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in shore:
+                    if re.search(r"\b(" + "|".join(shore) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("shore")
+                        comment.reply("Shore up the door!")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in spam:
+                    if re.search(r"\b(" + "|".join(shore) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("spam im sorry")
+                        comment.reply("Gimli! Aragorn! Get out of there!")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in pull:
+                    if re.search(r"\b(" + "|".join(pull) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("pull")
+                        comment.reply("Pull everybody back. Pull them back.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in breached:
+                    if re.search(r"\b(" + "|".join(breached) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("breached")
+                        comment.reply(" The castle is breached. Retreat!")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in over:
+                    if re.search(r"\b(" + "|".join(over) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("over")
+                        comment.reply("The fortress is taken. It is over.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in death:
+                    if re.search(r"\b(" + "|".join(death) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("hate")
+                        comment.reply("So much death. What can Men do against such reckless hate?")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in ride:
+                    if re.search(r"\b(" + "|".join(ride) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("ride")
+                        comment.reply(" For death and glory.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in horn:
+                    if re.search(r"\b(" + "|".join(horn) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("horn")
+                        comment.reply("Yes. Yes. The horn of Helm Hammerhand shall sound in the Deep on last time.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in sword:
+                    if re.search(r"\b(" + "|".join(sword) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("Let this be the hour when we draw swords together.")
+                        comment.reply(" Let this be the hour when we draw swords together.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in deeds:
+                    if re.search(r"\b(" + "|".join(deeds) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("deeds")
+                        comment.reply("Fell deeds, awake... Now for wrath, now for ruin and a red dawn... Forth Eorlingas!")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in win:
+                    if re.search(r"\b(" + "|".join(win) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("win")
+                        comment.reply("Victory! We have victory!")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in peace:
+                    if re.search(r"\b(" + "|".join(peace) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("we shall have peace")
+                        comment.reply("We shall have peace. We shall have peace when you answer for the burning of the Westfold and the children that lie dead there! We shall have peace when the lives of the soldiers whose bodies were hewn even as they lay dead against the gates of the Hornburg, are avenged! When you hang from a gibbet for the sport of your own crows, we shall have peace.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in broken:
+                    if re.search(r"\b(" + "|".join(broken) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("broken")
+                        comment.reply(comment.author.name + "," + " " + " you need not follow him. You were not always as you are now. You were once a Man of Rohan. Come down." )
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in sire:
+                    if re.search(r"\b(" + "|".join(sire) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("sire")
+                        comment.reply(comment.author.name + "," + " " + "come down. Be free of him")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in defend:
+                    if re.search(r"\b(" + "|".join(defend) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("defend")
+                        comment.reply("Tonight we remember those who gave their blood to defend this country. Hail the victorious dead!")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in honor:
+                    if re.search(r"\b(" + "|".join(honor) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("honor")
+                        comment.reply("I am happy for you. He is an honorable man.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in raze:
+                    if re.search(r"\b(" + "|".join(raze) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("raze")
+                        comment.reply("Tell me; why should we ride to the aid of those who did not come to ours? What do we owe Gondor?")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in beacons:
+                    if re.search(r"\b(" + "|".join(beacons) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("beacons")
+                        comment.reply("And Rohan will answer! Muster the Rohirrim! Assemble the Men at Dunharrow. As many Men as can be found. You have two days. On the third, we ride for Gondor and war!")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in two:
+                    if re.search(r"\b(" + "|".join(two) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("two")
+                        comment.reply("Make haste across the Riddermark. Summon every able-bodied man to Dunharrow.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in merry:
+                    if re.search(r"\b(" + "|".join(merry) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("merry")
+                        comment.reply("And gladly I accept it. You shall be Meriadoc, esquire of Rohan.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in doom:
+                    if re.search(r"\b(" + "|".join(doom) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("doom")
+                        comment.reply(" So, it is before the walls of Minas Tirith, the doom of our time will be decided.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in snowbourn:
+                    if re.search(r"\b(" + "|".join(snowbourn) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("snowbourn")
+                        comment.reply(" Where are the riders from Snowbourn?")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in spears:
+                    if re.search(r"\b(" + "|".join(spears) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and comment.author not in comment_replied_to and comment.author != r.user.me():
+                        print("spear")
+                        comment.reply("Six thousand spears. Less than half of what I’d hoped for.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in mordor:
+                    if re.search(r"\b(" + "|".join(mordor) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("mordor")
+                        comment.reply("More will come.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in elrond:
+                    if re.search(r"\b(" + "|".join(elrond) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("elrond")
+                        comment.reply(" I take my leave.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in must:
+                    if re.search(r"\b(" + "|".join(must) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("must")
+                        comment.reply(" He leaves because he must.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in less:
+                    if re.search(r"\b(" + "|".join(less) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("less")
+                        comment.reply("No, we cannot. But we will meet them in battle nonetheless.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in instruction:
+                    if re.search(r"\b(" + "|".join(instruction) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("instrucrion")
+                        comment.reply(" I have left instruction. The people are to follow your rule in my stead. Take up my seat in the Golden Hall. Long may you defend Edoras if the battle goes ill.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in duty:
+                    if re.search(r"\b(" + "|".join(duty) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("duty")
+                        comment.reply("Duty? No. I would have you smile again. Not grieve for those whose time has come. You shall live to see these days renewed. No more despair.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in swift:
+                    if re.search(r"\b(" + "|".join(swift) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("swift")
+                        comment.reply("We must ride light and swift. It is a long road ahead. And man and beast must reach the end with the strength to fight.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in hobbit:
+                    if re.search(r"\b(" + "|".join(hobbit) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("hobbit")
+                        comment.reply("Little Hobbits do not belong in war, Master Meriadoc.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in ashamed:
+                    if re.search(r"\b(" + "|".join(ashamed) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("ashamed")
+                        comment.reply(" It’s a three-day gallop to Minas Tirith, and none of my Riders can bear you as a burden.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in want:
+                    if re.search(r"\b(" + "|".join(want) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("want")
+                        comment.reply("I will say no more.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in ride:
+                    if re.search(r"\b(" + "|".join(ride) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("ride")
+                        comment.reply("Ride! Ride now to Gondor!")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in against:
+                    if re.search(r"\b(" + "|".join(against) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("against")
+                        comment.reply("Time is against us. Make ready!")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in night:
+                    if re.search(r"\b(" + "|".join(night) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("night")
+                        comment.reply("Make haste. We ride through the night.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in speech:
+                    if re.search(r"\b(" + "|".join(speech) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and comment.author not in comment_replied_to and comment.author != r.user.me():
+                        print("speech")
+                        comment.reply("Éomer, take your éored down the left flank. Gamling, follow the King’s banner down the center. Grimbold, take your company right after you pass the wall. Forth, and fear no darkness! Arise, Arise, Riders of Théoden! Spears shall be shaken, shields shall be splintered, a sword-day, a red day, ere the sun rises!  Ride now! Ride now! Ride! Ride for ruin, and the world’s ending! Death! Death! Death! Forth Eorlingas!!!")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in safe:
+                    if re.search(r"\b(" + "|".join(safe) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("safe")
+                        comment.reply("Make safe the city!")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in form:
+                    if re.search(r"\b(" + "|".join(form) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("form")
+                        comment.reply("Re-form the line! Re-form the line!")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in charge:
+                    if re.search(r"\b(" + "|".join(charge) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("charge")
+                        comment.reply(" Sound the charge! Take them head-on!")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in mumak:
+                    if re.search(r"\b(" + "|".join(mumak) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("oliphaunt")
+                        comment.reply(" Bring it down! Bring it down! Bring it down!")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in rally:
+                    if re.search(r"\b(" + "|".join(rally) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("rally")
+                        comment.reply("Rally to me! To me!")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in witch:
+                    if re.search(r"\b(" + "|".join(witch) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("Sad")
+                        comment.reply(" I know your face…Éowyn.")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in eyes:
+                    if re.search(r"\b(" + "|".join(eyes) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("eyes")
+                        comment.reply("My eyes darken")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in save:
+                    if re.search(r"\b(" + "|".join(save) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("save")
+                        comment.reply("You already did. Éowyn, my body is broken. You have to let me go. I go to my fathers, in whose mighty company, I shall not now feel ashamed...Éowyn…")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+                for keyword in kill:
+                    if keyword in comment.body and comment.id not in comment_replied_to and not comment.author == r.user.me:
+                        print("death")
+                        comment.reply("DEEEEAAATTTHH!!!!!")
+                        comment_replied_to.append(comment.id)
+                        with open("comment_replied_to.txt", "a") as f:
+                            f.write(comment.id + "\n")
+        if re.search(r"\b(" + "|".join(theoden) + r")\b", comment.body,re.IGNORECASE) and comment.id not in comment_replied_to and comment.author not in comment_replied_to and comment.author != r.user.me():
+            print("pp")
+            quotes = ["Why should I welcome you," + " " + comment.author.name + " " + "Stormcrow?", "*Grima*", "Hahahahaahaha. Hahahahahahah. You have no power here " + " " + comment.author.name + " " + "the Grey", "I know your face. Éowyn. Éowyn. Gandalf?", "Your witchcraft would have had me crawling on all fours like a beast!", "Dark have been my dreams of late.", "Where is Théodred? Where is my son?", "A Simblemynë. Ever has it grown on the tombs of my fore bearers. Now it shall cover the grave of my son. Alas that these evil days should be mine. The young perish, and the old linger. That I should live to see the last days of my house.", "No parent should have to bury their child.",
+                      "When I last looked, Théoden, not Aragorn, was King of Rohan.", " I am ready Gamling. Bring my horse...This is not a defeat...We will return...We will return.", 'She watched her mother succumb to grief. Then she was left alone, to tend her king in growing fear. Doomed to wait upon an old man who should have loved her as a father.', 'I haven’t seen my niece smile for a long time. She was a girl when they brought her father back dead. Cut down by Orcs.', " What is it? What do you see?", " All riders to the head of the column.", "You must lead the people to Helm’s Deep, and make haste.", "No! You must do this, for me.", " Get the wounded on horses. The wolves of Isengard will return. Leave the dead.", " Our people are safe. We have paid for it with many lives.",
+                      "Draw all our forces behind the wall. Bar the gate. And set a watch on the surround.", "Get them into the caves. Saruman’s arm will have grown long indeed if he thinks he can reach us here", "A great host, you say?", "Let them come!", 'I want every man and strong lad able to bear arms to be ready for battle by nightfall.', 'We will cover the causeway and the gate from above. No army has ever breached the Deeping wall, or set foot inside the Hornburg!', " I have fought many wars, Master Dwarf. I know how to defend my own keep", "They will break upon this fortress like water on rock. Saruman’s hordes will pillage and burn. We’ve seen it before. Crops can be resown, homes rebuilt. Within these walls we will outlast them.", "*What would you have me do? Look at my men. Their courage hangs by a thread. If this is to be our end, then I would have them make such an end as to be worthy of remembrance.*",
+                      "And who will come? Elves? Dwarves? We are not so lucky in our friends as you. The old alliances are dead.", "Gondor?! Where was Gondor when the Westfold fell?! Where was Gondor when our enemies closed in around us?! Where was Gon–? No, my Lord" + " " + comment.author.name + ", " + "we are alone.", "Get the women and children into the caves.", "There is no time. War is upon us.", " Who am I, Gamling?", "And do you trust your king?", " To whatever end.", "Where is the horse and the rider? Where is the horn that was blowing? They have passed like rain on the mountains. Like wind in the meadow. The days have gone down in the West, behind the hills, into shadow. How did it come to this?", "So it begins...", "Give them a volley.", " Is this it? Is this all you can conjure, Saruman?", "Brace the gate!", " Hold them! Stand firm!", comment.author.name + " !" + " "+  " Fall back to the Keep! Get your men out of there!",
+                      "To the gate. Draw your swords!", "As long as you can give me", "Shore up the door!", "Gimli! Aragorn! Get out of there!", "Pull everybody back. Pull them back.", " The castle is breached. Retreat!", "The fortress is taken. It is over.", "So much death. What can Men do against such reckless hate?", " For death and glory.", "Yes. Yes. The horn of Helm Hammerhand shall sound in the Deep on last time.", "Let this be the hour when we draw swords together.", "Fell deeds, awake... Now for wrath, now for ruin and a red dawn... Forth Eorlingas!", "Victory! We have victory!", "We shall have peace. We shall have peace when you answer for the burning of the Westfold and the children that lie dead there! We shall have peace when the lives of the soldiers whose bodies were hewn even as they lay dead against the gates of the Hornburg, are avenged! When you hang from a gibbet for the sport of your own crows, we shall have peace.",
+                      comment.author.name + "," + " " + " you need not follow him. You were not always as you are now. You were once a Man of Rohan. Come down.", comment.author.name + "," + " " + "come down. Be free of him", "Tonight we remember those who gave their blood to defend this country. Hail the victorious dead!", "I am happy for you. He is an honorable man.", "Tell me; why should we ride to the aid of those who did not come to ours? What do we owe Gondor?", "And Rohan will answer! Muster the Rohirrim! Assemble the Men at Dunharrow. As many Men as can be found. You have two days. On the third, we ride for Gondor and war!", "Make haste across the Riddermark. Summon every able-bodied man to Dunharrow.", "And gladly I accept it. You shall be Meriadoc, esquire of Rohan."," So, it is before the walls of Minas Tirith, the doom of our time will be decided.", " Where are the riders from Snowbourn?", "Six thousand spears. Less than half of what I’d hoped for.",
+                      "More will come.", " I take my leave.", " He leaves because he must.", "No, we cannot. But we will meet them in battle nonetheless.", " I have left instruction. The people are to follow your rule in my stead. Take up my seat in the Golden Hall. Long may you defend Edoras if the battle goes ill.", "Duty? No. I would have you smile again. Not grieve for those whose time has come. You shall live to see these days renewed. No more despair.","We must ride light and swift. It is a long road ahead. And man and beast must reach the end with the strength to fight.", "Little Hobbits do not belong in war, Master Meriadoc.", " It’s a three-day gallop to Minas Tirith, and none of my Riders can bear you as a burden.", "I will say no more.", "Ride! Ride now to Gondor!", "Time is against us. Make ready!", "Make haste. We ride through the night.","Éomer, take your éored down the left flank. Gamling, follow the King’s banner down the center. Grimbold, take your company right after you pass the wall. Forth, and fear no darkness! Arise, Arise, Riders of Théoden! Spears shall be shaken, shields shall be splintered, a sword-day, a red day, ere the sun rises!  Ride now! Ride now! Ride! Ride for ruin, and the world’s ending! Death! Death! Death! Forth Eorlingas!!!",
+                      "Make safe the city!", "Re-form the line! Re-form the line!", " Sound the charge! Take them head-on!", " Bring it down! Bring it down! Bring it down!", "Rally to me! To me!", " I know your face…Éowyn.", "My eyes darken.","You already did. Éowyn, my body is broken. You have to let me go. I go to my fathers, in whose mighty company, I shall not now feel ashamed...Éowyn…", "DEEEEAAATTTHH!!!!!", " Sound the charge! Take them head-on!"]
+            random_item = random.choice(quotes)
+            comment.reply(random_item)
+            comment_replied_to.append(comment.id)
+            with open("comment_replied_to.txt", "a") as f:
+                f.write(comment.id + "\n")
+
+    print("sleeping")
+def get_saved_comments():
+    if not os.path.isfile("comment_replied_to.txt"):
+        comment_replied_to = []
+    else:
+        with open("comment_replied_to.txt", "r") as f:
+            comment_replied_to = f.read()
+            comment_replied_to = comment_replied_to.split("\n")
+    return comment_replied_to
+
+r = bot_login()
+comment_replied_to = get_saved_comments()
+while True:
+    run_bot(r, comment_replied_to)
